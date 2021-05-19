@@ -73,6 +73,7 @@ def init(conf={}):
     path_of_maps = get_images_from_dir(conf['folder_with_maps'])
     target_folder = conf['target_folder']
     height_of_head = int(conf['height_of_head'])
+    lang = conf['lang']
     for path in path_of_maps:
         # Подключение фото
         # img = Image.open(path_of_maps[0])
@@ -86,7 +87,7 @@ def init(conf={}):
     
         # Определяем текст на изображении
         # Лучше использовать rus+eng
-        data_string = tsrct.image_to_string(img, lang='rus+eng', config=config)
+        data_string = tsrct.image_to_string(img, lang=lang, config=config)
         # Листинг
         # print(data_string)
         print(f'*'*50)
