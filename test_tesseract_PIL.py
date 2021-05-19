@@ -1,6 +1,7 @@
 import pytesseract as tsrct
 from PIL import Image
 import os
+import shutil
 
 # Настройки
 # Путь к установленному tesseract
@@ -70,6 +71,7 @@ def get_nomenclature(data_string):
 
 def init(conf={}):
     path_of_maps = get_images_from_dir(conf['folder_with_maps'])
+    target_folder = conf['target_folder']
     height_of_head = int(conf['height_of_head'])
     for path in path_of_maps:
         # Подключение фото
@@ -93,6 +95,8 @@ def init(conf={}):
         print(f'{path}')
         nomenclature = get_nomenclature(data_string)
         print(nomenclature)
+
+        shutil.copy(path, target_folder)
     
     
     # # Подключение фото
