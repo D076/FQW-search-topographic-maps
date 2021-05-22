@@ -5,6 +5,7 @@ from test_tesseract_PIL import *
 
 BUTTON_WIDTH = 40
 
+# Значение по умолчанию конфигурационного файла
 DEFAULT_CONFIG = {'tesseract_path': 'C:/Program Files/Tesseract-OCR/tesseract.exe',
                   'folder_with_maps': 'None',
                   'target_folder': 'None',
@@ -18,6 +19,10 @@ root.title("Поиск топографических карт")
 
 
 def load_config():
+    """
+    Загрузка сохраненных на диске конфигурачионных настроек
+    :return: Словарь с настройкми
+    """
     CONFIG = {}
     with open('./config.ini', 'r') as inp:
         CONFIG = {}
@@ -30,12 +35,22 @@ def load_config():
 
 
 def save_config(CONFIG):
+    """
+    Сохранение конфигурационных настроек на диск
+    :param CONFIG: Словарь с настройками
+    :return: None
+    """
     with open('./config.ini', 'w') as inp:
         for i in CONFIG:
             inp.write(i + '=' + CONFIG.get(i) + '\n')
+    return
 
 
 def choose_folder_with_maps():
+    """
+    Выбор папки для поиска карт и сохранение ее пути в конфигурационном файле
+    :return: None
+    """
     directory_name = filedialog.askdirectory()
     if not isinstance(directory_name, str):
         sys.exit(1)
@@ -45,6 +60,10 @@ def choose_folder_with_maps():
 
 
 def choose_target_folder():
+    """
+    Выбор целевой папки для переноса карт и сохранение ее пути в конфигурационном файле
+    :return: None
+    """
     directory_name = filedialog.askdirectory()
     if not isinstance(directory_name, str):
         sys.exit(1)

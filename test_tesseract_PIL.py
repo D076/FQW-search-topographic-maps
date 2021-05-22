@@ -5,7 +5,7 @@ import shutil
 
 # Настройки
 # Путь к установленному tesseract
-tsrct.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+# tsrct.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 height_of_head = 8  # Высота шапки в % (примерно 8)
 config = r'--oem 3 --psm 6'  # Конфигурация tesseract
 folder_with_maps = 'maps'
@@ -19,6 +19,11 @@ nomenclature = None
 
 
 def get_images_from_dir(folder='maps'):
+    """
+    Поиск всех изображений в папке
+    :param folder: Путь папки
+    :return: Массив с путями всех найденных изображений
+    """
     path_ = []
     for root, dirs, files in os.walk(folder):
         for filename in files:
@@ -29,6 +34,11 @@ def get_images_from_dir(folder='maps'):
 
 
 def get_nomenclature(data_string):
+    """
+    Поиск номенклатуры карты
+    :param data_string: Считанный с изображения текст
+    :return: Строка с номенклатурой или None, если номенклатура не определена.
+    """
     # Пытаемся найти слова, схожие с номенклатурой
     data = data_string.split()
     potential_nomenclature = []
@@ -70,6 +80,12 @@ def get_nomenclature(data_string):
 
 
 def init(conf={}):
+    """
+    Инициализация модуля
+    :param conf: значения конфигурационного файла
+    :return: None
+    """
+    tsrct.pytesseract.tesseract_cmd = conf['tesseract_path']
     path_of_maps = get_images_from_dir(conf['folder_with_maps'])
     target_folder = conf['target_folder']
     height_of_head = int(conf['height_of_head'])
@@ -98,8 +114,7 @@ def init(conf={}):
         print(nomenclature)
 
         shutil.copy(path, target_folder)
-    
-    
+
     # # Подключение фото
     # img = Image.open(path_of_maps[3])
     # # Вычислим размер фото и шапки
@@ -117,3 +132,4 @@ def init(conf={}):
     # nomenclature = get_nomenclature(img, data_string)
     # # print(f'{path}')
     # print(nomenclature)
+    return
