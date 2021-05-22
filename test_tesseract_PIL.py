@@ -79,12 +79,14 @@ def get_nomenclature(data_string):
             return None
 
 
-def init(conf={}):
+def init(conf=None):
     """
     Инициализация модуля
     :param conf: значения конфигурационного файла
     :return: None
     """
+    if conf is None:
+        conf = {}
     tsrct.pytesseract.tesseract_cmd = conf['tesseract_path']
     path_of_maps = get_images_from_dir(conf['folder_with_maps'])
     target_folder = conf['target_folder']
