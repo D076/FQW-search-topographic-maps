@@ -1,6 +1,7 @@
 import pytesseract
 import cv2
 import os
+from PIL import Image
 
 
 def get_images_from_dir(folder='maps'):
@@ -31,17 +32,19 @@ path_of_maps = get_images_from_dir(folder_with_maps)
 # ToDo cv2 при открытии файла с русскими символами возникает ошибка
 # Подключение фото
 img = cv2.imread(path_of_maps[0])
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-# Вычислим размер фото и шапки
-height = img.shape[0]
-width = img.shape[1]
-height_head = int(height * percent_of_head / 100)
-# Вырезаем шапку
-img = img[0:height_head, 0:width]
-view_image(img)
+print(img)
 
-
-# Определяем текст на изображении
-print(pytesseract.image_to_string(img, lang='rus+eng', config=config))
-# data = pytesseract.image_to_data(img, lang='rus+eng', config=config)
-# print(data)
+# img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+# # Вычислим размер фото и шапки
+# height = img.shape[0]
+# width = img.shape[1]
+# height_head = int(height * percent_of_head / 100)
+# # Вырезаем шапку
+# img = img[0:height_head, 0:width]
+# view_image(img)
+#
+#
+# # Определяем текст на изображении
+# print(pytesseract.image_to_string(img, lang='rus+eng', config=config))
+# # data = pytesseract.image_to_data(img, lang='rus+eng', config=config)
+# # print(data)
