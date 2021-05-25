@@ -51,11 +51,15 @@ def choose_folder_with_maps():
     Выбор папки для поиска карт и сохранение ее пути в конфигурационном файле
     :return: None
     """
-    directory_name = filedialog.askdirectory()
+    try:
+        directory_name = filedialog.askdirectory()
+    except Exception:
+        directory_name = ''
     if not isinstance(directory_name, str):
         sys.exit(1)
-    CONFIG['folder_with_maps'] = directory_name
-    save_config(CONFIG)
+    if directory_name != '':
+        CONFIG['folder_with_maps'] = directory_name
+        save_config(CONFIG)
     return
 
 
@@ -64,17 +68,30 @@ def choose_target_folder():
     Выбор целевой папки для переноса карт и сохранение ее пути в конфигурационном файле
     :return: None
     """
-    directory_name = filedialog.askdirectory()
+    try:
+        directory_name = filedialog.askdirectory()
+    except Exception:
+        directory_name = ''
     if not isinstance(directory_name, str):
         sys.exit(1)
-    CONFIG['target_folder'] = directory_name
-    save_config(CONFIG)
+    if directory_name != '':
+        CONFIG['target_folder'] = directory_name
+        save_config(CONFIG)
     return
+
+
+def launch():
+    """
+    Запуск модуля поиска
+    :return: None
+    """
+    CONFIG = load_config()
+    init(CONFIG)
 
 
 CONFIG = load_config()
 tk.Button(root, text="Запуск", width=BUTTON_WIDTH,
-          command=lambda: init(CONFIG)).pack()
+          command=lambda: launch()).pack()
 tk.Button(root, text="Выбрать папку для поиска карт", width=BUTTON_WIDTH,
           command=lambda: choose_folder_with_maps()).pack()
 tk.Button(root, text="Выбрать целевую папку", width=BUTTON_WIDTH,
