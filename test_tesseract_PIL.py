@@ -8,12 +8,13 @@ from pathlib import Path
 # Настройки
 # Путь к установленному tesseract
 # tsrct.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
-height_of_head = 8  # Высота шапки в % (примерно 8)
+# height_of_head = 8  # Высота шапки в % (примерно 8)
 config = r'--oem 3 --psm 6'  # Конфигурация tesseract
-folder_with_maps = 'maps'
+# folder_with_maps = 'maps'
 
 replace_dict = {'~': '-',
-                '!': '1'}
+                '!': '1',
+                '—': '-'}
 spec_symbols = ['°', '`', '‘', '*', '^', '#', '@', '.', '"', "'",
                 '%', ':', ';', '$', '№', '~', '=', '+', '(', ')',
                 '{', '}']
@@ -21,17 +22,25 @@ nomenclature = None
 
 
 def save_logging(conf=None, str=None):
+    """
+    Сохранение логов в файле
+    :param conf: Словарь с настройками
+    :param str: Строка, которую необходимо сохранить в лог
+    :return: None
+    """
     if conf is None:
         conf = {}
     with open('logs.log', 'a') as f:
         if str is None:
-            f.write(f'\n' + '*'*50 + '\n')
+            # При запуске модуля создаем шапку с временем запуска и текущими настройками
+            f.write(f'*'*50 + '\n')
             now = datetime.datetime.now()
             f.write(f'{now.strftime("%d-%m-%Y %H:%M:%S")}\n')
             if conf != {}:
                 f.write(f"tesseract_path={conf['tesseract_path']}\n")
                 f.write(f"folder_with_maps={conf['folder_with_maps']}\n")
                 f.write(f"target_folder={conf['target_folder']}\n")
+                f.write(f"lang={conf['lang']}\n")
                 f.write(f"height_of_head={conf['height_of_head']}\n\n")
         else:
             f.write(f'{str}\n')
@@ -78,13 +87,12 @@ def get_nomenclature(data_string):
         else:
             potential_nomenclature.append(word)
         prev_word = potential_nomenclature[-1]
-        # print(word)
 
     # Если слов напоминающих номенклатуру не удалось обнаружить, возвращаем None
     save_logging(str=f'Potential nomenclatures: {potential_nomenclature}')
     if len(potential_nomenclature) == 0:
-        return None
         # print(f'Номенклатура не найдена!')
+        return None
     else:
         # Корректируем слова
         for word in potential_nomenclature:
@@ -121,7 +129,10 @@ def init(conf=None):
     lang = conf['lang']
     for path in path_of_maps:
         # Подключение фото
-        img = Image.open(path)
+        try:
+            img = Image.open(path)
+        except Exception:
+            continue
         # Вычислим размер фото и шапки
         width, height = img.size
         height_head = int(height * height_of_head / 100)
@@ -151,7 +162,9 @@ def init(conf=None):
         rashirenie = Path(path).suffix
         file_name = ''
         if nomenclature is None:
-            file_name = f'{path_of_maps.index(path) + 1}-{len(path_of_maps)}'
+            # file_name = f'{path_of_maps.index(path) + 1}-{len(path_of_maps)}'
+            save_logging(str=f'Skipped\n')
+            continue
         else:
             file_name = f'{nomenclature}'
         i = 0
