@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import sys
-from test_tesseract_PIL import *
+from search_module import *
 
 BUTTON_WIDTH = 40
 
