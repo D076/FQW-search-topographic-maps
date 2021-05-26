@@ -3,7 +3,13 @@ from PIL import Image
 import os
 import shutil
 import datetime
+from functools import partial
+import time, threading
 from pathlib import Path
+import tkinter as tk
+from tkinter import ttk
+import queue
+
 
 # Настройки
 # Путь к установленному tesseract
@@ -17,7 +23,7 @@ replace_dict = {'~': '-',
                 '—': '-'}
 spec_symbols = ['°', '`', '‘', '*', '^', '#', '@', '.', '"', "'",
                 '%', ':', ';', '$', '№', '~', '=', '+', '(', ')',
-                '{', '}']
+                '{', '}', '[', ']']
 nomenclature = None
 
 
@@ -112,12 +118,13 @@ def get_nomenclature(data_string):
             return None
 
 
-def init(conf=None):
+def start_search(conf=None, q=None, r=None):
     """
     Инициализация модуля
     :param conf: значения конфигурационного файла
     :return: None
     """
+    # time1 = time.time()
     if conf is None:
         conf = {}
     save_logging(conf=conf)
@@ -125,9 +132,15 @@ def init(conf=None):
     tsrct.pytesseract.tesseract_cmd = conf['tesseract_path']
     path_of_maps = get_images_from_dir(conf['folder_with_maps'])
     target_folder = conf['target_folder']
+    if path_of_maps is None or target_folder is None:
+        save_logging(str=f'You need choose folder with maps and target folder\n')
+        print(f'You need choose folder with maps and target folder\n')
+        return
+
     height_of_head = int(conf['height_of_head'])
     lang = conf['lang']
     for path in path_of_maps:
+        # print(time.time() - time1)
         # Подключение фото
         try:
             img = Image.open(path)
@@ -147,6 +160,7 @@ def init(conf=None):
         save_logging(str=f'{path_of_maps.index(path) + 1} / {len(path_of_maps)} | '
                          f'{((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100)}%')
         save_logging(str=f'{path}')
+        save_logging(str=f'File {Path(path).name}')
         print(f'*'*50)
         print(f'{path_of_maps.index(path) + 1} / {len(path_of_maps)} | '
               f'{((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100)}%')
@@ -160,10 +174,11 @@ def init(conf=None):
         save_logging(str=f'Nomenclature {nomenclature}')
 
         rashirenie = Path(path).suffix
+
         file_name = ''
         if nomenclature is None:
             # file_name = f'{path_of_maps.index(path) + 1}-{len(path_of_maps)}'
-            save_logging(str=f'Skipped\n')
+            save_logging(str=f'Nomenclature is not found\n')
             continue
         else:
             file_name = f'{nomenclature}'
@@ -174,6 +189,30 @@ def init(conf=None):
                 file_name += f'({i})'
 
         shutil.copy(path, target_folder+f'/{file_name}{rashirenie}')
+        # Обновляем прогресс бар
+        q.put(((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100))
+        r.event_generate('<<Updated>>', when='tail')
         save_logging(str=f'Saved as {target_folder}/{file_name}{rashirenie}\n')
 
+    r.destroy()
+    return
+
+
+def on_update(event, q=None, pb=None):
+    # Получаем данные из очереди
+    pb['value'] = q.get()
+
+
+def init(conf):
+    q = queue.Queue()
+    root = tk.Tk()
+    root.title("Поиск")
+    root.geometry('300x50')
+    pb = ttk.Progressbar(root, mode="determinate")
+    pb.pack()
+    handler = partial(on_update, q=q, pb=pb)
+    root.bind('<<Updated>>', handler)
+    t = threading.Thread(target=start_search, args=(conf, q, root))
+    t.start()
+    root.mainloop()
     return
