@@ -32,6 +32,12 @@ first_letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G',
                 '0', '1', '2', '3', '4', '5', '6',
                 '7', '8', '9', '10', '11', '12', '13',
                 '14', '15', '16', '17', '18', '19', '20', '21']
+second_letter = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+                '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
+                '21', '22', '23', '24', '25', '26', '27', '28', '29', '30',
+                '31', '32', '33', '34', '35', '36', '37', '38', '39', '40',
+                '41', '42', '43', '44', '45', '46', '47', '48', '49', '50',
+                '51', '52', '53', '54', '55', '56', '57', '58', '59', '60']
 nomenclature = None
 
 
@@ -117,17 +123,28 @@ def get_nomenclature(data_string):
                 j = replace_dict.get(i)
                 word = word.replace(i, j)
             new_potential_nomenclature.append(word)
-        potential_nomenclature = new_potential_nomenclature
+        potential_nomenclature = list(new_potential_nomenclature)
         print(potential_nomenclature)
         # Удаляем некорректные слова
+        copy_potential_nomenclature = list(potential_nomenclature)
         for word in potential_nomenclature:
-            for i in spec_symbols:
-                if i in word:
-                    potential_nomenclature.remove(word)
-                    break
-            if word[0] not in first_letter:
-                potential_nomenclature.remove(word)
-
+            try:
+                if word.split('-')[0] not in first_letter:
+                    print(f'Неверное первое слово {word.split("-")[0]}')
+                    copy_potential_nomenclature.remove(word)
+                    continue
+                # if word.split('-')[1] not in first_letter and word.split('-')[1] is not None:
+                #     print(f'Неверное второе слово {word.split("-")[1]}')
+                #     potential_nomenclature.remove(word)
+                #     continue
+                for i in spec_symbols:
+                    if i in word:
+                        print(f'Запрещенный символ {i}')
+                        copy_potential_nomenclature.remove(word)
+                        break
+            except Exception:
+                pass
+        potential_nomenclature = list(copy_potential_nomenclature)
         print(potential_nomenclature)
         if len(potential_nomenclature) != 0:
             return potential_nomenclature[-1]
@@ -167,12 +184,15 @@ def start_search(conf=None, q=None, r=None):
         width, height = img.size
         height_head = int(height * height_of_head / 100)
         # Вырезаем шапку, в которой находится номенклатура
-        img = img.crop((0, 0, width, height_head))
-        # img.show()
-    
+        img_cropped = img.crop((0, 0, width, height_head/4))
+        # img_cropped.show()
         # Определяем текст на изображении
         # Лучше использовать rus+eng
-        data_string = tsrct.image_to_string(img, lang=lang, config=config)
+        data_string = tsrct.image_to_string(img_cropped, lang=lang, config=config)
+        img_cropped = img.crop((0, 0, width, height_head))
+        # img_cropped.show()
+        data_string2 = tsrct.image_to_string(img_cropped, lang=lang, config=config)
+        data_string = data_string + data_string2
         # Листинг
         save_logging(str=f'{path_of_maps.index(path) + 1} / {len(path_of_maps)} | '
                          f'{((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100)}%')
