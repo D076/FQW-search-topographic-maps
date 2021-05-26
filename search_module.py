@@ -12,11 +12,8 @@ import queue
 
 
 # Настройки
-# Путь к установленному tesseract
-# tsrct.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
-# height_of_head = 8  # Высота шапки в % (примерно 8)
 config = r'--oem 3 --psm 6'  # Конфигурация tesseract
-# folder_with_maps = 'maps'
+
 
 replace_dict = {'~': '-',
                 '!': '1',
@@ -130,7 +127,7 @@ def get_nomenclature(data_string):
                     break
             if word[0] not in first_letter:
                 potential_nomenclature.remove(word)
-        
+
         print(potential_nomenclature)
         if len(potential_nomenclature) != 0:
             return potential_nomenclature[-1]
