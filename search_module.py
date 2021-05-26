@@ -20,10 +20,21 @@ config = r'--oem 3 --psm 6'  # Конфигурация tesseract
 
 replace_dict = {'~': '-',
                 '!': '1',
-                '—': '-'}
+                'l': '1',
+                '—': '-',
+                'У': 'V',
+                'Ш': 'III'}
 spec_symbols = ['°', '`', '‘', '*', '^', '#', '@', '.', '"', "'",
                 '%', ':', ';', '$', '№', '~', '=', '+', '(', ')',
                 '{', '}', '[', ']']
+first_letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G',
+                'H', 'I', 'G', 'K', 'L', 'M', 'N',
+                'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+                'V', 'Z'
+                'А', 'М', 'О', 'Т', 'Е', 'К', 'Н',
+                '0', '1', '2', '3', '4', '5', '6',
+                '7', '8', '9', '10', '11', '12', '13',
+                '14', '15', '16', '17', '18', '19', '20', '21']
 nomenclature = None
 
 
@@ -75,6 +86,7 @@ def get_nomenclature(data_string):
     :return: Строка с номенклатурой или None, если номенклатура не определена.
     """
     # Пытаемся найти слова, схожие с номенклатурой
+    print(data_string)
     data = data_string.split()
     try:
         save_logging(str=f'Data from image {data}')
@@ -101,17 +113,25 @@ def get_nomenclature(data_string):
         return None
     else:
         # Корректируем слова
+        # print(potential_nomenclature)
+        new_potential_nomenclature = []
         for word in potential_nomenclature:
             for i in replace_dict:
                 j = replace_dict.get(i)
                 word = word.replace(i, j)
-
+            new_potential_nomenclature.append(word)
+        potential_nomenclature = new_potential_nomenclature
+        print(potential_nomenclature)
         # Удаляем некорректные слова
         for word in potential_nomenclature:
             for i in spec_symbols:
                 if i in word:
                     potential_nomenclature.remove(word)
                     break
+            if word[0] not in first_letter:
+                potential_nomenclature.remove(word)
+        
+        print(potential_nomenclature)
         if len(potential_nomenclature) != 0:
             return potential_nomenclature[-1]
         else:
