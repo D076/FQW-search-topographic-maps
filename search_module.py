@@ -13,6 +13,7 @@ import queue
 
 # Настройки
 config = r'--oem 3 --psm 6'  # Конфигурация tesseract
+DEBUG = False
 
 
 replace_dict = {'~': '-',
@@ -38,6 +39,34 @@ second_letter = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
                 '31', '32', '33', '34', '35', '36', '37', '38', '39', '40',
                 '41', '42', '43', '44', '45', '46', '47', '48', '49', '50',
                 '51', '52', '53', '54', '55', '56', '57', '58', '59', '60']
+third_letter = ['А', 'Б', 'В', 'Г', '1', '2', '3', '4', 'A',
+                '01', '02', '03', '04', '05', '06', '07', '08', '09', '10',
+                '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
+                '21', '22', '23', '24', '25', '26', '27', '28', '29', '30',
+                '31', '32', '33', '34', '35', '36',
+                'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI',
+                'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX',
+                'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII',
+                'XXIX', 'XXX', 'XXXI', 'XXXII', 'XXXIII', 'XXXIV', 'XXXV', 'XXXVI',
+                '001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012', '013', '014',
+                '015', '016', '017', '018', '019', '020', '021', '022', '023', '024', '025', '026', '027', '028',
+                '029', '030', '031', '032', '033', '034', '035', '036', '037', '038', '039', '040', '041', '042',
+                '043', '044', '045', '046', '047', '048', '049', '050', '051', '052', '053', '054', '055', '056',
+                '057', '058', '059', '060', '061', '062', '063', '064', '065', '066', '067', '068', '069', '070',
+                '071', '072', '073', '074', '075', '076', '077', '078', '079', '080', '081', '082', '083', '084',
+                '085', '086', '087', '088', '089', '090', '091', '092', '093', '094', '095', '096', '097', '098',
+                '099', '100', '101', '102', '103', '104', '105', '106', '107', '108', '109', '110', '111', '112',
+                '113', '114', '115', '116', '117', '118', '119', '120', '121', '122', '123', '124', '125', '126',
+                '127', '128', '129', '130', '131', '132', '133', '134', '135', '136', '137', '138', '139', '140',
+                '141', '142', '143', '144',
+                '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26',
+                '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43',
+                '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60',
+                '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77',
+                '78', '79', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90', '91', '92', '93', '94',
+                '95', '96', '97', '98', '99']
+fourth_letter = ['A', 'Б', 'В', 'Г', 'A']
+fifth_letter = ['а', 'б', 'в', 'г', 'a']
 nomenclature = None
 
 
@@ -89,12 +118,14 @@ def get_nomenclature(data_string):
     :return: Строка с номенклатурой или None, если номенклатура не определена.
     """
     # Пытаемся найти слова, схожие с номенклатурой
-    print(data_string)
+    if DEBUG:
+        print(data_string)
     data = data_string.split()
-    try:
-        save_logging(str=f'Data from image {data}')
-    except Exception:
-        pass
+    if DEBUG:
+        try:
+            save_logging(str=f'Data from image {data}')
+        except Exception:
+            pass
     potential_nomenclature = []
     prev_word = data[0]
     for word in data:
@@ -133,10 +164,36 @@ def get_nomenclature(data_string):
                     print(f'Неверное первое слово {word.split("-")[0]}')
                     copy_potential_nomenclature.remove(word)
                     continue
-                # if word.split('-')[1] not in first_letter and word.split('-')[1] is not None:
-                #     print(f'Неверное второе слово {word.split("-")[1]}')
-                #     potential_nomenclature.remove(word)
-                #     continue
+            except Exception:
+                pass
+            try:
+                if word.split('-')[1] not in second_letter and word.split('-')[1] is not None:
+                    print(f'Неверное второе слово {word.split("-")[1]}')
+                    copy_potential_nomenclature.remove(word)
+                    continue
+            except Exception:
+                pass
+            try:
+                if word.split('-')[2] not in third_letter and word.split('-')[2] is not None:
+                    print(f'Неверное третье слово {word.split("-")[2]}')
+                    copy_potential_nomenclature.remove(word)
+                    continue
+            except Exception:
+                pass
+            try:
+                if word.split('-')[3] not in fourth_letter and word.split('-')[3] is not None:
+                    print(f'Неверное четвертое слово {word.split("-")[3]}')
+                    copy_potential_nomenclature.remove(word)
+                    continue
+            except Exception:
+                pass
+            try:
+                if word.split('-')[4] not in fifth_letter and word.split('-')[4] is not None:
+                    print(f'Неверное пятое слово {word.split("-")[4]}')
+                    copy_potential_nomenclature.remove(word)
+                    continue
+            except Exception:
+                pass
                 for i in spec_symbols:
                     if i in word:
                         print(f'Запрещенный символ {i}')
@@ -203,6 +260,7 @@ def start_search(conf=None, q=None, r=None):
               f'{((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100)}%')
         print(f'{path}')
         nomenclature = None
+
         try:
             nomenclature = get_nomenclature(data_string)
         except Exception:
@@ -229,15 +287,23 @@ def start_search(conf=None, q=None, r=None):
         # Обновляем прогресс бар
         q.put(((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100))
         r.event_generate('<<Updated>>', when='tail')
+        # r.event_generate('<<Updated>>')
         save_logging(str=f'Saved as {target_folder}/{file_name}{rashirenie}\n')
 
     r.destroy()
     return
 
 
-def on_update(event, q=None, pb=None):
+def update_progress_label(pb=None):
+    if pb is None:
+        return 'Current Progress: 0%'
+    return f"Current Progress: {round(pb['value'], 2)}%"
+
+
+def on_update(event, q=None, pb=None, value_label=None):
     # Получаем данные из очереди
     pb['value'] = q.get()
+    value_label['text'] = update_progress_label(pb)
 
 
 def init(conf):
@@ -245,9 +311,11 @@ def init(conf):
     root = tk.Tk()
     root.title("Поиск")
     root.geometry('300x50')
+    value_label = ttk.Label(root, text=update_progress_label())
+    value_label.pack()
     pb = ttk.Progressbar(root, mode="determinate")
     pb.pack()
-    handler = partial(on_update, q=q, pb=pb)
+    handler = partial(on_update, q=q, pb=pb, value_label=value_label)
     root.bind('<<Updated>>', handler)
     t = threading.Thread(target=start_search, args=(conf, q, root))
     t.start()
