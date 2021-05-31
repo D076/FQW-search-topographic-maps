@@ -194,6 +194,14 @@ def get_nomenclature(data_string):
                     continue
             except Exception:
                 pass
+            try:
+                if word.split('-')[5] is not None:
+                    print(f'Неверная форма номенклатуры {word}')
+                    copy_potential_nomenclature.remove(word)
+                    continue
+            except Exception:
+                pass
+            try:
                 for i in spec_symbols:
                     if i in word:
                         print(f'Запрещенный символ {i}')
