@@ -13,7 +13,7 @@ import queue
 
 # Настройки
 config = r'--oem 3 --psm 6'  # Конфигурация tesseract
-DEBUG = False
+DEBUG = True
 
 
 replace_dict = {'~': '-',
@@ -79,20 +79,52 @@ def save_logging(conf=None, str=None):
     """
     if conf is None:
         conf = {}
-    with open('logs.log', 'a') as f:
-        if str is None:
-            # При запуске модуля создаем шапку с временем запуска и текущими настройками
-            f.write(f'*'*50 + '\n')
-            now = datetime.datetime.now()
-            f.write(f'{now.strftime("%d-%m-%Y %H:%M:%S")}\n')
-            if conf != {}:
-                f.write(f"tesseract_path={conf['tesseract_path']}\n")
-                f.write(f"folder_with_maps={conf['folder_with_maps']}\n")
-                f.write(f"target_folder={conf['target_folder']}\n")
-                f.write(f"lang={conf['lang']}\n")
-                f.write(f"height_of_head={conf['height_of_head']}\n\n")
-        else:
-            f.write(f'{str}\n')
+    try:
+        with open('logs.log', 'a') as f:
+            if str is None:
+                # При запуске модуля создаем шапку с временем запуска и текущими настройками
+                f.write(f'*'*50 + '\n')
+                now = datetime.datetime.now()
+                f.write(f'{now.strftime("%d-%m-%Y %H:%M:%S")}\n')
+                if conf != {}:
+                    f.write(f"tesseract_path={conf['tesseract_path']}\n")
+                    f.write(f"folder_with_maps={conf['folder_with_maps']}\n")
+                    f.write(f"target_folder={conf['target_folder']}\n")
+                    f.write(f"lang={conf['lang']}\n")
+                    f.write(f"height_of_head={conf['height_of_head']}\n\n")
+            else:
+                f.write(f'{str}\n')
+    except Exception:
+        pass
+    return
+
+
+def save_logging2(conf=None, str=None):
+    """
+    Сохранение логов в файле
+    :param conf: Словарь с настройками
+    :param str: Строка, которую необходимо сохранить в лог
+    :return: None
+    """
+    if conf is None:
+        conf = {}
+    try:
+        with open('data_from_image.log', 'a') as f:
+            if str is None:
+                # При запуске модуля создаем шапку с временем запуска и текущими настройками
+                f.write(f'*'*50 + '\n')
+                now = datetime.datetime.now()
+                f.write(f'{now.strftime("%d-%m-%Y %H:%M:%S")}\n')
+                if conf != {}:
+                    f.write(f"tesseract_path={conf['tesseract_path']}\n")
+                    f.write(f"folder_with_maps={conf['folder_with_maps']}\n")
+                    f.write(f"target_folder={conf['target_folder']}\n")
+                    f.write(f"lang={conf['lang']}\n")
+                    f.write(f"height_of_head={conf['height_of_head']}\n\n")
+            else:
+                f.write(f'{str}\n')
+    except Exception:
+        pass
     return
 
 
@@ -118,12 +150,12 @@ def get_nomenclature(data_string):
     :return: Строка с номенклатурой или None, если номенклатура не определена.
     """
     # Пытаемся найти слова, схожие с номенклатурой
-    if DEBUG:
-        print(data_string)
+    # if DEBUG:
+    #     print(data_string)
     data = data_string.split()
     if DEBUG:
         try:
-            save_logging(str=f'Data from image {data}')
+            save_logging2(str=f'Data from image {data}\n')
         except Exception:
             pass
     potential_nomenclature = []
@@ -158,45 +190,80 @@ def get_nomenclature(data_string):
         print(potential_nomenclature)
         # Удаляем некорректные слова
         copy_potential_nomenclature = list(potential_nomenclature)
+        go_next = False
         for word in potential_nomenclature:
+            go_next = False
+            word_splitted = word.split('-')
             try:
-                if word.split('-')[0] not in first_letter:
-                    print(f'Неверное первое слово {word.split("-")[0]}')
+
+                if word_splitted[0] not in first_letter:
+                    print(f'{word} Неверное первое слово {word_splitted[0]}')
+                    save_logging(str=f'{word} Неверное первое слово {word_splitted[0]}')
                     copy_potential_nomenclature.remove(word)
                     continue
             except Exception:
                 pass
             try:
-                if word.split('-')[1] not in second_letter and word.split('-')[1] is not None:
-                    print(f'Неверное второе слово {word.split("-")[1]}')
+                # if ',' in word_splitted[1]:
+                #     word2_splitted = word_splitted[1].split(',')
+                #     for w in word2_splitted:
+                #         if w not in second_letter:
+                #             print(f'{word} Неверное второе слово {word_splitted[1]}')
+                #             # save_logging(str=f'{word} Неверное второе слово {word_splitted[1]}')
+                #             copy_potential_nomenclature.remove(word)
+                #             go_next = True
+                #             break
+                # if go_next:
+                #     continue
+                if word_splitted[1] not in second_letter:
+                    print(f'{word} Неверное второе слово {word_splitted[1]}')
+                    save_logging(str=f'{word} Неверное второе слово {word_splitted[1]}')
                     copy_potential_nomenclature.remove(word)
                     continue
             except Exception:
                 pass
             try:
+                # if ',' in word_splitted[2]:
+                #     word3_splitted = word_splitted[2].split(',')
+                #     for w in word3_splitted:
+                #         if w not in third_letter:
+                #             log = f'{word} Неверное третье слово {word_splitted[2]}'
+                #             print(log)
+                #             # save_logging(str=log)
+                #             copy_potential_nomenclature.remove(word)
+                #             go_next = True
+                #             break
+                # if go_next:
+                #     continue
                 if word.split('-')[2] not in third_letter and word.split('-')[2] is not None:
-                    print(f'Неверное третье слово {word.split("-")[2]}')
+                    log = f'{word} неверное третье слово {word_splitted[2]}'
+                    print(log)
+                    save_logging(str=log)
+                    # save_logging(str=f'неверное третье слово')
                     copy_potential_nomenclature.remove(word)
                     continue
             except Exception:
                 pass
             try:
                 if word.split('-')[3] not in fourth_letter and word.split('-')[3] is not None:
-                    print(f'Неверное четвертое слово {word.split("-")[3]}')
+                    print(f'{word} Неверное четвертое слово {word.split("-")[3]}')
+                    save_logging(str=f'{word} Неверное четвертое слово {word.split("-")[3]}')
                     copy_potential_nomenclature.remove(word)
                     continue
             except Exception:
                 pass
             try:
                 if word.split('-')[4] not in fifth_letter and word.split('-')[4] is not None:
-                    print(f'Неверное пятое слово {word.split("-")[4]}')
+                    print(f'{word} Неверное пятое слово {word.split("-")[4]}')
+                    save_logging(str=f'{word} Неверное пятое слово {word.split("-")[4]}')
                     copy_potential_nomenclature.remove(word)
                     continue
             except Exception:
                 pass
             try:
                 if word.split('-')[5] is not None:
-                    print(f'Неверная форма номенклатуры {word}')
+                    print(f'{word} Неверная форма номенклатуры')
+                    save_logging(str=f'{word} Неверная форма номенклатуры')
                     copy_potential_nomenclature.remove(word)
                     continue
             except Exception:
@@ -204,7 +271,8 @@ def get_nomenclature(data_string):
             try:
                 for i in spec_symbols:
                     if i in word:
-                        print(f'Запрещенный символ {i}')
+                        print(f'{word} Запрещенный символ {i}')
+                        save_logging(str=f'{word} Запрещенный символ {i}')
                         copy_potential_nomenclature.remove(word)
                         break
             except Exception:
@@ -227,7 +295,7 @@ def start_search(conf=None, q=None, r=None):
     if conf is None:
         conf = {}
     save_logging(conf=conf)
-
+    save_logging2(conf=conf)
     tsrct.pytesseract.tesseract_cmd = conf['tesseract_path']
     path_of_maps = get_images_from_dir(conf['folder_with_maps'])
     target_folder = conf['target_folder']
@@ -263,6 +331,10 @@ def start_search(conf=None, q=None, r=None):
                          f'{((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100)}%')
         save_logging(str=f'{path}')
         save_logging(str=f'File {Path(path).name}')
+        save_logging2(str=f'{path_of_maps.index(path) + 1} / {len(path_of_maps)} | '
+                         f'{((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100)}%')
+        save_logging2(str=f'{path}')
+        save_logging2(str=f'File {Path(path).name}')
         print(f'*'*50)
         print(f'{path_of_maps.index(path) + 1} / {len(path_of_maps)} | '
               f'{((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100)}%')
@@ -281,7 +353,8 @@ def start_search(conf=None, q=None, r=None):
         file_name = ''
         if nomenclature is None:
             # file_name = f'{path_of_maps.index(path) + 1}-{len(path_of_maps)}'
-            save_logging(str=f'Nomenclature is not found\n')
+            print(f'Номенклатура не определена, файл не копируем\n')
+            save_logging(str=f'Номенклатура не определена, файл не копируем\n')
             continue
         else:
             file_name = f'{nomenclature}'
@@ -296,6 +369,7 @@ def start_search(conf=None, q=None, r=None):
         q.put(((path_of_maps.index(path) + 1) / (len(path_of_maps)) * 100))
         r.event_generate('<<Updated>>', when='tail')
         # r.event_generate('<<Updated>>')
+        print(f'Saved as {target_folder}/{file_name}{rashirenie}\n')
         save_logging(str=f'Saved as {target_folder}/{file_name}{rashirenie}\n')
 
     r.destroy()
