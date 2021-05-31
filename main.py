@@ -112,7 +112,9 @@ if not os.path.exists('config.ini'):
 if not os.path.exists('logs.log'):
     with open('./logs.log', 'w') as inp:
         pass
-
+if not os.path.exists('data_from_image.log'):
+    with open('./data_from_image.log', 'w') as inp:
+        pass
 
 CONFIG = load_config()
 tk.Button(root, text="Запуск", width=BUTTON_WIDTH,
