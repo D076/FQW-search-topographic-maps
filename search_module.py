@@ -3,6 +3,7 @@ from PIL import Image
 import os
 import shutil
 import datetime
+from copy import copy, deepcopy
 from functools import partial
 import time, threading
 from pathlib import Path
@@ -317,14 +318,29 @@ def start_search(conf=None, q=None, r=None):
         width, height = img.size
         height_head = int(height * height_of_head / 100)
         # Вырезаем шапку, в которой находится номенклатура
-        img_cropped = img.crop((0, 0, width, height_head/4))
+        try:
+            img_cropped = img.crop((0, 0, width, height_head/4))
+        except Exception:
+            print('EXCEPTION')
+            img_cropped = deepcopy(img)
         # img_cropped.show()
         # Определяем текст на изображении
         # Лучше использовать rus+eng
-        data_string = tsrct.image_to_string(img_cropped, lang=lang, config=config)
-        img_cropped = img.crop((0, 0, width, height_head))
+        data_string = ''
+        data_string2 = ''
+        try:
+            data_string = tsrct.image_to_string(img_cropped, lang=lang, config=config)
+        except Exception:
+            pass
+        try:
+            img_cropped = img.crop((0, 0, width, height_head))
+        except Exception:
+            img_cropped = deepcopy(img)
         # img_cropped.show()
-        data_string2 = tsrct.image_to_string(img_cropped, lang=lang, config=config)
+        try:
+            data_string2 = tsrct.image_to_string(img_cropped, lang=lang, config=config)
+        except Exception:
+            pass
         data_string = data_string + data_string2
         # Листинг
         save_logging(str=f'{path_of_maps.index(path) + 1} / {len(path_of_maps)} | '
