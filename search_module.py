@@ -211,18 +211,18 @@ def get_nomenclature(data_string):
             except Exception:
                 pass
             try:
-                # if ',' in word_splitted[1]:
-                #     word2_splitted = word_splitted[1].split(',')
-                #     for w in word2_splitted:
-                #         if w not in second_letter:
-                #             print(f'{word} Неверное второе слово {word_splitted[1]}')
-                #             # save_logging(str=f'{word} Неверное второе слово {word_splitted[1]}')
-                #             copy_potential_nomenclature.remove(word)
-                #             go_next = True
-                #             break
-                # if go_next:
-                #     continue
-                if word_splitted[1] not in second_letter:
+                if ',' in word_splitted[1]:
+                    word2_splitted = word_splitted[1].split(',')
+                    for w in word2_splitted:
+                        if w not in second_letter:
+                            print(f'{word} Неверное второе слово (,) {word_splitted[1]}')
+                            save_logging(str=f'{word} Неверное второе слово {word_splitted[1]}')
+                            copy_potential_nomenclature.remove(word)
+                            go_next = True
+                            break
+                if go_next:
+                    continue
+                if ',' not in word_splitted[1] and word_splitted[1] not in second_letter:
                     print(f'{word} Неверное второе слово {word_splitted[1]}')
                     save_logging(str=f'{word} Неверное второе слово {word_splitted[1]}')
                     copy_potential_nomenclature.remove(word)
@@ -230,31 +230,21 @@ def get_nomenclature(data_string):
             except Exception:
                 pass
             try:
-                # if ',' in word_splitted[2]:
-                #     word3_splitted = word_splitted[2].split(',')
-                #     for w in word3_splitted:
-                #         if w not in third_letter:
-                #             log = f'{word} Неверное третье слово {word_splitted[2]}'
-                #             print(log)
-                #             # save_logging(str=log)
-                #             copy_potential_nomenclature.remove(word)
-                #             go_next = True
-                #             break
-                # if go_next:
-                #     continue
-                if word.split('-')[2] not in third_letter and word.split('-')[2] is not None:
+                if ',' in word_splitted[2]:
+                    word3_splitted = word_splitted[2].split(',')
+                    for w in word3_splitted:
+                        if w not in third_letter:
+                            print(f'{word} Неверное третье слово (,) {word_splitted[2]}')
+                            save_logging(str=f'{word} Неверное третье слово {word_splitted[2]}')
+                            copy_potential_nomenclature.remove(word)
+                            go_next = True
+                            break
+                if go_next:
+                    continue
+                if ',' not in word_splitted[2] and word_splitted[2] not in third_letter:
                     log = f'{word} неверное третье слово {word_splitted[2]}'
                     print(log)
                     save_logging(str=log)
-                    # save_logging(str=f'неверное третье слово')
-                    copy_potential_nomenclature.remove(word)
-                    continue
-            except Exception:
-                pass
-            try:
-                if word.split('-')[3] not in fourth_letter and word.split('-')[3] is not None:
-                    print(f'{word} Неверное четвертое слово {word.split("-")[3]}')
-                    save_logging(str=f'{word} Неверное четвертое слово {word.split("-")[3]}')
                     copy_potential_nomenclature.remove(word)
                     continue
             except Exception:
